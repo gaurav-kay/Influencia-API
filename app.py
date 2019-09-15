@@ -9,15 +9,34 @@ db = firestore.client(default_app)
 
 app = Flask(__name__)
 
-#
+"""
+api args request requirements:
+    tags, as a comma separated string
+    influencer_id
+"""
+
+
 @app.route('/register_influencer', methods=['POST'])
 def register_influencer():
-    influencer_tags = request.json['tags']
-    influencer_tags = set(influencer_tags)
+    influencer_tags_set = set(list(str(request.args['tags']).split(',')))
 
     for brand_doc_ref in db.collection('brands').stream():
-        brand_tags_set = set(brand_doc_ref.to_dict())
+        brand_tags_set = set(list(brand_doc_ref.to_dict()['tags']))
 
-        db\
-            .collection('influencers')\
-            .document(request.json[''])
+        db \
+            .collection('influencers') \
+            .document(request.args['influencer_id']) \
+            .collection('score') \
+            .document(brand_doc_ref.id + '-' + request.args['influencer_id']) \
+            .set({
+                'common_tags': list(brand_tags_set.intersection(influencer_tags_set)),
+                'score': 100
+                        if len(influencer_tags_set.intersection(brand_tags_set)) == 0
+                        else len(influencer_tags_set.intersection(brand_tags_set)) * 100 / len(brand_tags_set)
+            })
+
+    return jsonify({'status': 'registered'})
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
