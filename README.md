@@ -1,8 +1,9 @@
 Influencia API
 ==============
 
-## Connects Brands with Influencers
-The Flask API developed for CodeFury 2.0 Hackathon.
+**Connects Brands with Influencers**
+
+The Flask API developed for CodeFury 2.0 Hackathon, Where we were the Runner up.
 
 # Usage
 ## Clone this repository
